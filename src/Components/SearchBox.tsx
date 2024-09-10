@@ -1,5 +1,6 @@
 import {FunctionComponent, useEffect, useState, useContext} from 'react';
 import TextField from '@mui/material/TextField';
+import { useNavigate } from 'react-router-dom';
 import Autocomplete from '@mui/material/Autocomplete';
 import {
   buildSearchBox,
@@ -15,11 +16,11 @@ interface SearchBoxProps {
 const SearchBoxRenderer: FunctionComponent<SearchBoxProps> = (props) => {
   const {controller} = props;
   const [state, setState] = useState(controller.state);
-
   useEffect(
     () => controller.subscribe(() => setState(controller.state)),
     [controller]
   );
+  const navigate = useNavigate();
 
   return (
     <Autocomplete
@@ -29,6 +30,7 @@ const SearchBoxRenderer: FunctionComponent<SearchBoxProps> = (props) => {
       }}
       onChange={() => {
         controller.submit();
+        navigate(`/search#q=${controller.state.value}`);
       }}
       options={state.suggestions.map((suggestion) => suggestion.rawValue)}
       freeSolo

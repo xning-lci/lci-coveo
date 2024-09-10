@@ -7,9 +7,8 @@ const FacetList = () => {
     <Box>
       <Box px={1} pb={1}>
         <Typography variant="overline">Refine By</Typography>
-        <Facet field="objecttype" title="Object Type" />
-        <Facet field="filetype" title="File Type" />
-        <Facet field="author" title="Author" />
+        <Facet field="lci_faculties_and_schools" facetId="facultiesAndSchools" title="Faculties And Schools" />
+        <Facet field="lci_fields_of_study" facetId="fieldsOfStudy" title="Fields Of Study" />
       </Box>
     </Box>
   );

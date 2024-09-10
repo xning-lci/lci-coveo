@@ -11,6 +11,7 @@ import EngineContext from '../common/engineContext';
 interface FacetProps {
   title: string;
   field: string;
+  facetId?: string;
 }
 
 interface FacetRendererProps extends FacetProps {
@@ -95,6 +96,7 @@ const Facet: FunctionComponent<FacetProps> = (props) => {
     options: {
       numberOfValues: 5,
       field: props.field,
+      facetId: props.facetId
     },
   });
   return <FacetRenderer {...props} controller={controller} />;

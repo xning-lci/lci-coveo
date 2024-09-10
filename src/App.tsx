@@ -1,8 +1,10 @@
-import React, {useEffect} from 'react';
+import React, { useContext, useEffect } from 'react';
+import Alert from '@mui/material/Alert';
+
+import EngineContext, { EngineProvider } from "./common/engineContext";
+import { bindUrlManager } from "./common/urlManager";
+import SearchBox from "./Components/SearchBox";
 import SearchPage from './Components/SearchPage';
-import Hero from './Components/Hero';
-import logo from './logo.svg';
-import coveologo from './coveologo.svg';
 import {
   BrowserRouter as Router,
   Routes,
@@ -14,7 +16,17 @@ import {initializeHeadlessEngine} from './common/Engine';
 import {SearchEngine} from '@coveo/headless';
 
 export default function App() {
+  const [engine, setEngine] = React.useState<SearchEngine | null>(null);
+
+  useEffect(() => {
+    initializeHeadlessEngine().then((engine) => {
+      bindUrlManager(engine)
+      setEngine(engine);
+    });
+  }, []);
+
   return (
+    <EngineProvider value={engine}>
     <Router>
       <Routes>
         <Route
@@ -25,8 +37,11 @@ export default function App() {
         />
         <Route path="/home" element={<Home />} />
         <Route path="/error" element={<Error />} />
+        <Route path="/news" element={<News />} />
+        <Route path="/search" element={<SearchResult />} />
       </Routes>
     </Router>
+    </EngineProvider>
   );
 }
 
@@ -45,23 +60,40 @@ const isEnvValid = () => {
 };
 
 const Home = () => {
-  const [engine, setEngine] = React.useState<SearchEngine | null>(null);
+  const engine = useContext(EngineContext)!;
+  if (engine) {
+    return (
+      <>
+        <meta name={'campus'} content={'Montreal'}/>
+        <Alert  severity="info"> You can search with `art` or `fashion`</Alert>
 
-  useEffect(() => {
-    initializeHeadlessEngine().then((engine) => {
-      setEngine(engine);
-    });
-  }, []);
+        <div className="App">
+          <SearchBox />
+        </div>
+      </>
+    );
+  } else {
+    return <div>Waiting for engine</div>;
+  }
+};
+
+const SearchResult = () => {
+  const engine = useContext(EngineContext)!;
 
   if (engine) {
     return (
-      <div className="App">
-        <Hero
-          logos={[logo, coveologo]}
-          welcome="Welcome to Your Coveo React.js Search Page"
-        />
-        {engine && <SearchPage engine={engine} />}
-      </div>
+      <>
+        <meta name={'campus'} content={'Montreal'}/>
+        <div className="App">
+          <Alert  severity="error">Do not refresh, because I did not add the logic to keep the query. Your urlManager.state.fragment is not update when register with existing hash </Alert>
+          <Alert  severity="info"> {`  const fragment = () => window.location.hash.slice(1);
+            const urlManager = buildUrlManager(engine, {
+              initialState: {fragment: fragment()},
+            });`}</Alert>
+          <Alert  severity="success">Now you might have at least one Error: signal is aborted in your console</Alert>
+          {engine && <SearchPage engine={engine}/>}
+        </div>
+      </>
     );
   } else {
     return <div>Waiting for engine</div>;
@@ -98,3 +130,7 @@ const Error = () => {
     </Box>
   );
 };
+
+const News = ()=>{
+return <div>test</div>
+}
